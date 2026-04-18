@@ -1,0 +1,1769 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Decide Bacia — Análise Multicritério para Comitês de Bacia | ANA/UNESCO</title>
+<meta name="description" content="Plataforma didática de análise multicritério para decisões em comitês de bacia hidrográfica. Baseada na metodologia da Agência Nacional de Águas e cooperação Sul-Sul UNESCO.">
+<style>
+  /* =========================================================
+     DECIDE BACIA — plataforma de análise multicritério
+     Fundo branco, visual limpo, colorido, didático, acessível
+     ========================================================= */
+
+  :root {
+    /* Paleta água-terra-vida: azul água, verde Pantanal, amarelo sol, vermelho alerta */
+    --agua: #0077B6;
+    --agua-claro: #CAF0F8;
+    --agua-escuro: #023E8A;
+    --verde: #2A9D8F;
+    --verde-claro: #D4EDE8;
+    --verde-escuro: #1B6B61;
+    --amarelo: #F4A261;
+    --amarelo-claro: #FCE4CB;
+    --vermelho: #E76F51;
+    --vermelho-claro: #FBE0D5;
+    --cinza-texto: #1A1A1A;
+    --cinza-secundario: #5A5A5A;
+    --cinza-borda: #E5E5E5;
+    --cinza-fundo: #FAFAFA;
+    --branco: #FFFFFF;
+    --sombra: 0 1px 3px rgba(0,0,0,0.06), 0 4px 12px rgba(0,0,0,0.04);
+    --sombra-alta: 0 4px 16px rgba(0,0,0,0.08), 0 8px 32px rgba(0,0,0,0.06);
+    --radius: 12px;
+    --radius-s: 8px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'Segoe UI', system-ui, -apple-system, Roboto, sans-serif;
+    font-size: 17px;
+    line-height: 1.6;
+    color: var(--cinza-texto);
+    background: var(--branco);
+    min-height: 100vh;
+  }
+
+  @media (min-width: 1024px) {
+    body { font-size: 18px; }
+  }
+
+  /* ===== Cabeçalho ===== */
+  header {
+    background: linear-gradient(135deg, var(--agua-escuro) 0%, var(--agua) 50%, var(--verde) 100%);
+    color: var(--branco);
+    padding: 32px 24px 40px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  header::before {
+    content: "";
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background-image: radial-gradient(circle at 20% 30%, rgba(255,255,255,0.08) 0%, transparent 40%),
+                      radial-gradient(circle at 80% 70%, rgba(255,255,255,0.06) 0%, transparent 45%);
+    pointer-events: none;
+  }
+  header .inner { position: relative; z-index: 1; max-width: 1100px; margin: 0 auto; }
+  header .selo {
+    display: inline-block;
+    font-size: 0.75rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    background: rgba(255,255,255,0.2);
+    padding: 6px 14px;
+    border-radius: 20px;
+    margin-bottom: 16px;
+    font-weight: 600;
+  }
+  header h1 {
+    font-size: clamp(1.9rem, 4.5vw, 2.8rem);
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    margin-bottom: 10px;
+    line-height: 1.15;
+  }
+  header h1 .destaque {
+    background: linear-gradient(135deg, #FFE8A8, #FCE4CB);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  header .subtitulo {
+    font-size: clamp(1rem, 2vw, 1.2rem);
+    opacity: 0.95;
+    max-width: 720px;
+    margin: 0 auto 20px;
+    font-weight: 400;
+  }
+  header .parceiros {
+    font-size: 0.85rem;
+    opacity: 0.85;
+    margin-top: 8px;
+    font-weight: 500;
+  }
+
+  /* ===== Navegação principal ===== */
+  nav.principal {
+    background: var(--branco);
+    border-bottom: 1px solid var(--cinza-borda);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: var(--sombra);
+  }
+  nav.principal .nav-inner {
+    max-width: 1100px;
+    margin: 0 auto;
+    display: flex;
+    gap: 4px;
+    padding: 0 16px;
+    overflow-x: auto;
+    scrollbar-width: thin;
+  }
+  nav.principal button {
+    background: transparent;
+    border: none;
+    padding: 16px 18px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--cinza-secundario);
+    cursor: pointer;
+    white-space: nowrap;
+    border-bottom: 3px solid transparent;
+    transition: all 0.2s;
+    font-family: inherit;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  nav.principal button:hover { color: var(--agua); background: var(--agua-claro); }
+  nav.principal button.ativo {
+    color: var(--agua-escuro);
+    border-bottom-color: var(--agua);
+    background: var(--agua-claro);
+  }
+  nav.principal button .num {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    background: var(--cinza-borda);
+    color: var(--cinza-secundario);
+    border-radius: 50%;
+    font-size: 0.8rem;
+    font-weight: 700;
+  }
+  nav.principal button.ativo .num {
+    background: var(--agua);
+    color: var(--branco);
+  }
+
+  /* ===== Container principal ===== */
+  main {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 32px 20px 80px;
+  }
+
+  section.etapa { display: none; animation: fadeIn 0.3s ease; }
+  section.etapa.ativa { display: block; }
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ===== Títulos ===== */
+  h2.titulo-etapa {
+    font-size: clamp(1.5rem, 3vw, 2rem);
+    font-weight: 800;
+    color: var(--agua-escuro);
+    margin-bottom: 8px;
+    letter-spacing: -0.01em;
+  }
+  .subtitulo-etapa {
+    font-size: 1.05rem;
+    color: var(--cinza-secundario);
+    margin-bottom: 28px;
+    max-width: 800px;
+  }
+
+  /* ===== Caixa didática ===== */
+  .didatica {
+    background: linear-gradient(135deg, var(--agua-claro) 0%, #E8F6FB 100%);
+    border-left: 5px solid var(--agua);
+    padding: 20px 22px;
+    border-radius: var(--radius);
+    margin-bottom: 28px;
+    box-shadow: var(--sombra);
+  }
+  .didatica.verde {
+    background: linear-gradient(135deg, var(--verde-claro) 0%, #E8F4F1 100%);
+    border-left-color: var(--verde);
+  }
+  .didatica.amarelo {
+    background: linear-gradient(135deg, var(--amarelo-claro) 0%, #FDEDD9 100%);
+    border-left-color: var(--amarelo);
+  }
+  .didatica h3 {
+    font-size: 1.15rem;
+    margin-bottom: 8px;
+    color: var(--agua-escuro);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .didatica.verde h3 { color: var(--verde-escuro); }
+  .didatica.amarelo h3 { color: #A05C1A; }
+  .didatica p { line-height: 1.65; color: #333; margin-bottom: 8px; }
+  .didatica p:last-child { margin-bottom: 0; }
+  .didatica ul { margin: 10px 0 0 20px; line-height: 1.7; }
+
+  .icone {
+    display: inline-flex;
+    width: 32px;
+    height: 32px;
+    background: var(--branco);
+    border-radius: 50%;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    box-shadow: var(--sombra);
+  }
+
+  /* ===== Cartões ===== */
+  .cartao {
+    background: var(--branco);
+    border: 1px solid var(--cinza-borda);
+    border-radius: var(--radius);
+    padding: 24px;
+    margin-bottom: 20px;
+    box-shadow: var(--sombra);
+    transition: box-shadow 0.2s;
+  }
+  .cartao:hover { box-shadow: var(--sombra-alta); }
+
+  /* ===== Tabelas ===== */
+  .tabela-container {
+    background: var(--branco);
+    border: 1px solid var(--cinza-borda);
+    border-radius: var(--radius);
+    overflow: hidden;
+    margin-bottom: 20px;
+    box-shadow: var(--sombra);
+    overflow-x: auto;
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.95rem;
+    min-width: 640px;
+  }
+  table thead {
+    background: linear-gradient(135deg, var(--agua-escuro), var(--agua));
+    color: var(--branco);
+  }
+  table thead th {
+    padding: 14px 12px;
+    text-align: center;
+    font-weight: 700;
+    font-size: 0.9rem;
+    letter-spacing: 0.02em;
+    border-right: 1px solid rgba(255,255,255,0.15);
+  }
+  table thead th:last-child { border-right: none; }
+  table thead th:first-child { text-align: left; }
+  table tbody td {
+    padding: 14px 12px;
+    border-bottom: 1px solid var(--cinza-borda);
+    text-align: center;
+    vertical-align: middle;
+  }
+  table tbody td:first-child {
+    text-align: left;
+    font-weight: 600;
+  }
+  table tbody tr:last-child td { border-bottom: none; }
+  table tbody tr:hover { background: var(--cinza-fundo); }
+
+  /* ===== Cores de pontuação ===== */
+  .nota {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 56px;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-weight: 700;
+    font-size: 0.95rem;
+  }
+  .nota-alto    { background: var(--verde-claro); color: var(--verde-escuro); }
+  .nota-bom     { background: #E7F3D4; color: #5C7A1F; }
+  .nota-moderado{ background: var(--amarelo-claro); color: #8F4A12; }
+  .nota-baixo   { background: var(--vermelho-claro); color: #8F2F15; }
+
+  .faixa {
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-size: 0.82rem;
+    font-weight: 700;
+    margin-right: 6px;
+  }
+
+  /* ===== Inputs ===== */
+  input[type="text"], input[type="number"], textarea, select {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid var(--cinza-borda);
+    border-radius: var(--radius-s);
+    font-size: 0.95rem;
+    font-family: inherit;
+    color: var(--cinza-texto);
+    background: var(--branco);
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+  input:focus, textarea:focus, select:focus {
+    outline: none;
+    border-color: var(--agua);
+    box-shadow: 0 0 0 3px var(--agua-claro);
+  }
+  textarea { resize: vertical; min-height: 70px; }
+  label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 6px;
+    color: var(--cinza-texto);
+    font-size: 0.95rem;
+  }
+  .campo { margin-bottom: 16px; }
+
+  input.peso-input {
+    width: 80px;
+    text-align: center;
+    font-weight: 700;
+    font-size: 1rem;
+  }
+  input.nota-input {
+    width: 72px;
+    text-align: center;
+    font-weight: 700;
+    font-size: 1rem;
+    padding: 8px 6px;
+  }
+
+  /* ===== Botões ===== */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 12px 22px;
+    border: none;
+    border-radius: var(--radius-s);
+    font-size: 0.95rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-family: inherit;
+    text-decoration: none;
+  }
+  .btn-primario {
+    background: linear-gradient(135deg, var(--agua), var(--agua-escuro));
+    color: var(--branco);
+    box-shadow: 0 2px 6px rgba(2, 62, 138, 0.25);
+  }
+  .btn-primario:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(2, 62, 138, 0.35);
+  }
+  .btn-secundario {
+    background: var(--branco);
+    color: var(--agua-escuro);
+    border: 2px solid var(--agua);
+  }
+  .btn-secundario:hover { background: var(--agua-claro); }
+  .btn-verde {
+    background: linear-gradient(135deg, var(--verde), var(--verde-escuro));
+    color: var(--branco);
+  }
+  .btn-verde:hover { transform: translateY(-1px); }
+  .btn-vermelho {
+    background: var(--branco);
+    color: var(--vermelho);
+    border: 2px solid var(--vermelho);
+  }
+  .btn-vermelho:hover { background: var(--vermelho-claro); }
+  .btn-pequeno { padding: 6px 12px; font-size: 0.85rem; }
+
+  .acoes {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 1px solid var(--cinza-borda);
+  }
+
+  /* ===== Critério editor ===== */
+  .criterio-card {
+    background: var(--branco);
+    border: 2px solid var(--cinza-borda);
+    border-radius: var(--radius);
+    padding: 18px;
+    margin-bottom: 14px;
+    transition: border-color 0.2s;
+  }
+  .criterio-card:hover { border-color: var(--agua); }
+  .criterio-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 16px;
+    margin-bottom: 12px;
+    flex-wrap: wrap;
+  }
+  .criterio-titulo {
+    flex: 1;
+    min-width: 200px;
+  }
+  .criterio-peso {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--agua-claro);
+    padding: 8px 14px;
+    border-radius: var(--radius-s);
+    font-weight: 700;
+  }
+  .peso-total {
+    text-align: right;
+    padding: 14px;
+    background: var(--verde-claro);
+    border-radius: var(--radius-s);
+    font-weight: 700;
+    font-size: 1.1rem;
+    color: var(--verde-escuro);
+    margin-top: 12px;
+  }
+  .peso-total.erro { background: var(--vermelho-claro); color: #8F2F15; }
+
+  /* ===== Alternativa editor ===== */
+  .alt-card {
+    border: 2px solid var(--cinza-borda);
+    border-radius: var(--radius);
+    padding: 18px;
+    margin-bottom: 14px;
+    background: var(--branco);
+  }
+  .alt-card h4 {
+    font-size: 1.1rem;
+    color: var(--agua-escuro);
+    margin-bottom: 12px;
+  }
+
+  /* ===== Matriz de avaliação ===== */
+  .matriz-grid {
+    display: grid;
+    gap: 2px;
+    background: var(--cinza-borda);
+    border-radius: var(--radius);
+    overflow: hidden;
+    font-size: 0.95rem;
+  }
+  .matriz-grid .celula {
+    background: var(--branco);
+    padding: 12px;
+    display: flex;
+    align-items: center;
+  }
+  .matriz-grid .celula.header {
+    background: var(--agua-escuro);
+    color: var(--branco);
+    font-weight: 700;
+    justify-content: center;
+    text-align: center;
+    font-size: 0.9rem;
+  }
+  .matriz-grid .celula.header.alt-header {
+    background: var(--verde-escuro);
+    text-align: left;
+    justify-content: flex-start;
+  }
+
+  /* ===== Resultado ===== */
+  .resultado-card {
+    background: linear-gradient(135deg, var(--branco), #F8FCFE);
+    border: 2px solid var(--agua-claro);
+    border-radius: var(--radius);
+    padding: 24px;
+    margin-bottom: 20px;
+    box-shadow: var(--sombra);
+  }
+  .resultado-card.vencedor {
+    background: linear-gradient(135deg, #FFF9E6, #FFF3D0);
+    border-color: var(--amarelo);
+    position: relative;
+  }
+  .resultado-card.vencedor::before {
+    content: "🏆 DESTAQUE";
+    position: absolute;
+    top: -14px;
+    left: 20px;
+    background: var(--amarelo);
+    color: var(--branco);
+    padding: 4px 14px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 800;
+    letter-spacing: 0.1em;
+  }
+  .resultado-nome {
+    font-size: 1.4rem;
+    font-weight: 800;
+    color: var(--agua-escuro);
+    margin-bottom: 6px;
+  }
+  .resultado-pontuacao {
+    font-size: 3rem;
+    font-weight: 800;
+    line-height: 1;
+    margin: 12px 0;
+    background: linear-gradient(135deg, var(--agua), var(--verde));
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .resultado-barra {
+    height: 32px;
+    background: var(--cinza-borda);
+    border-radius: 16px;
+    overflow: hidden;
+    margin: 14px 0 8px;
+  }
+  .resultado-barra-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--agua), var(--verde));
+    border-radius: 16px;
+    transition: width 0.6s ease;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    padding-right: 12px;
+    color: var(--branco);
+    font-weight: 700;
+    font-size: 0.85rem;
+  }
+  .breakdown {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 6px;
+    margin-top: 14px;
+  }
+  @media (min-width: 700px) {
+    .breakdown { grid-template-columns: repeat(2, 1fr); }
+  }
+  .breakdown-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 12px;
+    background: rgba(255,255,255,0.6);
+    border-radius: 6px;
+    font-size: 0.9rem;
+  }
+  .breakdown-item .crit-nome { color: var(--cinza-secundario); }
+  .breakdown-item .crit-valor { font-weight: 700; color: var(--agua-escuro); }
+
+  /* ===== Leitura interpretativa ===== */
+  .leitura-box {
+    background: linear-gradient(135deg, var(--verde-claro), #E8F4F1);
+    border-left: 5px solid var(--verde);
+    padding: 22px;
+    border-radius: var(--radius);
+    margin: 24px 0;
+    box-shadow: var(--sombra);
+  }
+  .leitura-box h3 {
+    color: var(--verde-escuro);
+    margin-bottom: 12px;
+    font-size: 1.2rem;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  /* ===== Participantes (modo oficina) ===== */
+  .participante-card {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 14px 18px;
+    background: var(--cinza-fundo);
+    border-radius: var(--radius-s);
+    margin-bottom: 10px;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+  .participante-info { flex: 1; min-width: 200px; }
+  .participante-nome { font-weight: 700; color: var(--agua-escuro); }
+  .participante-setor {
+    display: inline-block;
+    font-size: 0.8rem;
+    padding: 2px 10px;
+    background: var(--branco);
+    border: 1px solid var(--cinza-borda);
+    border-radius: 12px;
+    margin-top: 4px;
+  }
+
+  /* ===== Exemplos práticos ===== */
+  .exemplo-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 14px;
+    margin-top: 16px;
+  }
+  @media (min-width: 700px) {
+    .exemplo-grid { grid-template-columns: repeat(3, 1fr); }
+  }
+  .exemplo-card {
+    background: var(--branco);
+    border: 2px solid var(--cinza-borda);
+    border-radius: var(--radius);
+    padding: 18px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .exemplo-card:hover {
+    border-color: var(--agua);
+    transform: translateY(-2px);
+    box-shadow: var(--sombra-alta);
+  }
+  .exemplo-card h4 {
+    color: var(--agua-escuro);
+    margin-bottom: 8px;
+  }
+  .exemplo-card p {
+    font-size: 0.9rem;
+    color: var(--cinza-secundario);
+    margin-bottom: 12px;
+  }
+
+  /* ===== Modo (Guiado, Oficina, Especialista) ===== */
+  .modo-selector {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 14px;
+    margin: 20px 0 28px;
+  }
+  @media (min-width: 800px) {
+    .modo-selector { grid-template-columns: repeat(3, 1fr); }
+  }
+  .modo-card {
+    background: var(--branco);
+    border: 2px solid var(--cinza-borda);
+    border-radius: var(--radius);
+    padding: 22px;
+    cursor: pointer;
+    transition: all 0.2s;
+    position: relative;
+  }
+  .modo-card:hover { border-color: var(--agua); transform: translateY(-2px); }
+  .modo-card.selecionado {
+    border-color: var(--agua);
+    background: linear-gradient(135deg, var(--branco), var(--agua-claro));
+  }
+  .modo-card .icone-modo {
+    font-size: 2.2rem;
+    margin-bottom: 10px;
+  }
+  .modo-card h4 {
+    font-size: 1.15rem;
+    color: var(--agua-escuro);
+    margin-bottom: 6px;
+  }
+  .modo-card p {
+    font-size: 0.9rem;
+    color: var(--cinza-secundario);
+    line-height: 1.5;
+  }
+
+  /* ===== Dicas (tooltip estilo card) ===== */
+  .dica-inline {
+    font-size: 0.85rem;
+    color: var(--cinza-secundario);
+    margin-top: 4px;
+    font-style: italic;
+    line-height: 1.4;
+  }
+
+  /* ===== Rodapé ===== */
+  footer {
+    background: var(--cinza-fundo);
+    padding: 36px 20px;
+    text-align: center;
+    color: var(--cinza-secundario);
+    font-size: 0.9rem;
+    border-top: 1px solid var(--cinza-borda);
+    line-height: 1.7;
+  }
+  footer strong { color: var(--agua-escuro); }
+  footer a { color: var(--agua); text-decoration: none; font-weight: 600; }
+  footer a:hover { text-decoration: underline; }
+
+  /* ===== Linha do tempo de etapas ===== */
+  .progresso {
+    display: flex;
+    justify-content: space-between;
+    max-width: 800px;
+    margin: 0 auto 32px;
+    padding: 0 20px;
+    gap: 4px;
+  }
+  .progresso-item {
+    flex: 1;
+    text-align: center;
+    font-size: 0.8rem;
+    color: var(--cinza-secundario);
+    position: relative;
+  }
+  .progresso-item::before {
+    content: "";
+    position: absolute;
+    top: 12px;
+    left: -50%;
+    right: 50%;
+    height: 3px;
+    background: var(--cinza-borda);
+    z-index: 0;
+  }
+  .progresso-item:first-child::before { display: none; }
+  .progresso-item.concluido::before,
+  .progresso-item.ativo::before { background: var(--agua); }
+  .progresso-item .bola {
+    display: inline-flex;
+    width: 26px;
+    height: 26px;
+    background: var(--branco);
+    border: 3px solid var(--cinza-borda);
+    border-radius: 50%;
+    margin-bottom: 4px;
+    position: relative;
+    z-index: 1;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.75rem;
+    font-weight: 700;
+  }
+  .progresso-item.concluido .bola { background: var(--agua); border-color: var(--agua); color: var(--branco); }
+  .progresso-item.ativo .bola { border-color: var(--agua); color: var(--agua); }
+
+  /* ===== Print (para relatório PDF) ===== */
+  @media print {
+    nav.principal, header .selo, .acoes, .btn, footer .noprint,
+    .progresso, .modo-selector, .exemplo-grid { display: none !important; }
+    section.etapa { display: block !important; page-break-after: always; }
+    body { font-size: 12pt; }
+    header { background: none; color: var(--cinza-texto); padding: 20px 0; }
+    header h1 { color: var(--agua-escuro); }
+    header h1 .destaque { -webkit-text-fill-color: var(--verde); }
+    main { padding: 0; max-width: 100%; }
+    .cartao, .tabela-container, .resultado-card { box-shadow: none; border: 1px solid #999; }
+  }
+
+  /* Utilidades */
+  .flex-row { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+  .mt-16 { margin-top: 16px; }
+  .mt-24 { margin-top: 24px; }
+  .mb-16 { margin-bottom: 16px; }
+  .text-center { text-align: center; }
+  .hidden { display: none !important; }
+</style>
+</head>
+
+<body>
+
+<!-- ============== CABEÇALHO ============== -->
+<header>
+  <div class="inner">
+    <div class="selo">Comitês de Bacia · Gestão Participativa</div>
+    <h1>Decide <span class="destaque">Bacia</span></h1>
+    <p class="subtitulo">
+      Plataforma didática de <strong>análise multicritério</strong> para apoiar decisões colegiadas em comitês de bacia hidrográfica.
+      Transforma a tabela da reunião em um diálogo estruturado entre atores da água.
+    </p>
+    <div class="parceiros">Instrumento educativo e participativo · Ernandes Sobreira · UNEMAT · 2026</div>
+  </div>
+</header>
+
+<!-- ============== NAVEGAÇÃO ============== -->
+<nav class="principal">
+  <div class="nav-inner" id="nav-principal">
+    <button data-etapa="0" class="ativo"><span class="num">i</span> Começar aqui</button>
+    <button data-etapa="1"><span class="num">1</span> Critérios e pesos</button>
+    <button data-etapa="2"><span class="num">2</span> Alternativas</button>
+    <button data-etapa="3"><span class="num">3</span> Avaliar</button>
+    <button data-etapa="4"><span class="num">4</span> Resultado</button>
+    <button data-etapa="5"><span class="num">5</span> Relatório</button>
+  </div>
+</nav>
+
+<!-- ============== CONTEÚDO PRINCIPAL ============== -->
+<main>
+
+<!-- ===== ETAPA 0: INTRODUÇÃO + MODO ===== -->
+<section id="etapa-0" class="etapa ativa">
+
+  <h2 class="titulo-etapa">Bem-vindo ao Decide Bacia</h2>
+  <p class="subtitulo-etapa">
+    Esta plataforma foi pensada como um <strong>instrumento educativo e participativo</strong>, para servir de base às tomadas de decisão em comitês de bacia.
+    Serve para comparar alternativas de investimento, projetos hídricos, intervenções em saneamento, recuperação de nascentes, e qualquer decisão em que <em>vários aspectos</em> precisam ser pesados ao mesmo tempo.
+  </p>
+
+  <div class="didatica">
+    <h3><span class="icone">💡</span> O que é análise multicritério em linguagem simples</h3>
+    <p>
+      Quando o comitê precisa escolher entre alternativas, raramente uma é melhor em tudo.
+      Uma represa pode ser boa em garantir água mas ruim em equidade social.
+      Um portfólio verde pode trazer muitos co-benefícios mas custar mais operacionalmente.
+    </p>
+    <p>
+      <strong>A análise multicritério ajuda a comparar alternativas olhando para vários ângulos ao mesmo tempo</strong>,
+      dando um peso diferente para cada aspecto segundo o que o comitê julga importante.
+      O resultado não é um veredito técnico; é um <strong>instrumento de diálogo</strong> que organiza o debate.
+    </p>
+  </div>
+
+  <div class="didatica verde">
+    <h3><span class="icone">🧭</span> Como usar em uma reunião do comitê</h3>
+    <ul>
+      <li><strong>Antes</strong>: a secretaria executiva cadastra os critérios, pesos e alternativas com base nos estudos técnicos.</li>
+      <li><strong>Durante</strong>: o comitê revisa os pesos (os pesos refletem valores, não técnica), avalia cada alternativa em cada critério e discute os resultados.</li>
+      <li><strong>Depois</strong>: o comitê exporta o relatório em PDF e o anexa à ata da reunião.</li>
+    </ul>
+  </div>
+
+  <h3 style="margin-top: 36px; margin-bottom: 12px; color: var(--agua-escuro);">Escolha um modo de trabalho</h3>
+  <p style="color: var(--cinza-secundario); margin-bottom: 12px;">Você pode mudar de modo a qualquer momento.</p>
+
+  <div class="modo-selector">
+    <div class="modo-card selecionado" data-modo="guiado">
+      <div class="icone-modo">📖</div>
+      <h4>Modo Guiado</h4>
+      <p>Ideal para um primeiro uso. Passo a passo com explicações em cada etapa. Recomendado para comitês iniciantes.</p>
+    </div>
+    <div class="modo-card" data-modo="oficina">
+      <div class="icone-modo">👥</div>
+      <h4>Modo Oficina</h4>
+      <p>Para uso em reuniões presenciais. Cada segmento (poder público, usuários, sociedade civil) avalia em separado e a plataforma mostra a média e as divergências.</p>
+    </div>
+    <div class="modo-card" data-modo="especialista">
+      <div class="icone-modo">🔬</div>
+      <h4>Modo Especialista</h4>
+      <p>Interface enxuta, sem textos explicativos. Para usuários já familiares com análise multicritério. Foco em rapidez.</p>
+    </div>
+  </div>
+
+  <h3 style="margin-top: 36px; margin-bottom: 12px; color: var(--agua-escuro);">Começar com um exemplo ou do zero</h3>
+
+  <div class="exemplo-grid">
+    <div class="exemplo-card" onclick="carregarExemplo('ana')">
+      <h4>💧 Segurança hídrica na bacia</h4>
+      <p>Caso ANA/UNESCO. Comparar três estratégias: represa grande, portfólio verde+cinza e gestão de demanda.</p>
+      <button class="btn btn-secundario btn-pequeno">Carregar exemplo</button>
+    </div>
+    <div class="exemplo-card" onclick="carregarExemplo('saneamento')">
+      <h4>🚿 Prioridade em saneamento</h4>
+      <p>Comitê precisa priorizar investimento entre esgoto, resíduos sólidos e educação sanitária.</p>
+      <button class="btn btn-secundario btn-pequeno">Carregar exemplo</button>
+    </div>
+    <div class="exemplo-card" onclick="carregarExemplo('nascentes')">
+      <h4>🌱 Recuperação de nascentes</h4>
+      <p>Escolher entre modelos de pagamento por serviços ambientais para recuperar nascentes da bacia.</p>
+      <button class="btn btn-secundario btn-pequeno">Carregar exemplo</button>
+    </div>
+  </div>
+
+  <div class="acoes">
+    <button class="btn btn-primario" onclick="irEtapa(1)">Avançar para Critérios e Pesos →</button>
+    <button class="btn btn-secundario" onclick="iniciarDoZero()">Começar do zero (limpar tudo)</button>
+    <button class="btn btn-secundario" onclick="carregarSalvo()">Retomar trabalho salvo</button>
+  </div>
+</section>
+
+<!-- ===== ETAPA 1: CRITÉRIOS E PESOS ===== -->
+<section id="etapa-1" class="etapa">
+  <h2 class="titulo-etapa">Etapa 1: Critérios e pesos</h2>
+  <p class="subtitulo-etapa">
+    Os critérios são as <strong>dimensões de avaliação</strong> que o comitê considera relevantes.
+    Os pesos dizem quanto cada critério importa, de 0 a 100%, totalizando 100%.
+  </p>
+
+  <div class="didatica exp-guiado">
+    <h3><span class="icone">⚖️</span> Como pensar os pesos</h3>
+    <p>
+      Os pesos não são uma questão técnica, são uma questão de <strong>valores e prioridades da bacia</strong>.
+      Um comitê em região de escassez pode dar peso 35% ao desempenho hidrológico.
+      Um comitê preocupado com populações vulneráveis pode dar peso 30% à equidade social.
+    </p>
+    <p>
+      <strong>Regra prática</strong>: pergunte ao grupo "se tivéssemos que sacrificar algum critério, qual seria o último a sair?" Esse é o de maior peso.
+    </p>
+    <p>A soma dos pesos deve ser exatamente 100%. A plataforma alerta se não estiver.</p>
+  </div>
+
+  <div class="cartao">
+    <div id="lista-criterios"></div>
+    <div id="peso-total-display" class="peso-total">Soma dos pesos: 100%</div>
+
+    <button class="btn btn-verde mt-16" onclick="adicionarCriterio()">+ Adicionar critério</button>
+    <button class="btn btn-secundario mt-16" onclick="normalizarPesos()">Normalizar para somar 100%</button>
+  </div>
+
+  <div class="acoes">
+    <button class="btn btn-secundario" onclick="irEtapa(0)">← Voltar</button>
+    <button class="btn btn-primario" onclick="irEtapa(2)">Avançar para Alternativas →</button>
+  </div>
+</section>
+
+<!-- ===== ETAPA 2: ALTERNATIVAS ===== -->
+<section id="etapa-2" class="etapa">
+  <h2 class="titulo-etapa">Etapa 2: Alternativas a comparar</h2>
+  <p class="subtitulo-etapa">
+    As alternativas são as <strong>opções concretas</strong> que o comitê avalia.
+    Podem ser projetos, políticas, cenários de investimento ou qualquer conjunto comparável de ações.
+  </p>
+
+  <div class="didatica verde exp-guiado">
+    <h3><span class="icone">🎯</span> Como descrever bem uma alternativa</h3>
+    <ul>
+      <li><strong>Nome curto</strong>: algo que identifique claramente a proposta, como "Represa Grande" ou "Portfólio Verde+Cinza".</li>
+      <li><strong>Descrição objetiva</strong>: 2 a 3 linhas sobre o que a alternativa faz, onde e para quem. Evite linguagem técnica demais.</li>
+      <li><strong>Mínimo recomendado</strong>: 2 alternativas. O caso clássico da ANA trabalha com 3.</li>
+    </ul>
+  </div>
+
+  <div class="cartao">
+    <div id="lista-alternativas"></div>
+    <button class="btn btn-verde mt-16" onclick="adicionarAlternativa()">+ Adicionar alternativa</button>
+  </div>
+
+  <div class="acoes">
+    <button class="btn btn-secundario" onclick="irEtapa(1)">← Voltar</button>
+    <button class="btn btn-primario" onclick="irEtapa(3)">Avançar para Avaliação →</button>
+  </div>
+</section>
+
+<!-- ===== ETAPA 3: AVALIAR ===== -->
+<section id="etapa-3" class="etapa">
+  <h2 class="titulo-etapa">Etapa 3: Avaliar cada alternativa em cada critério</h2>
+  <p class="subtitulo-etapa">
+    Agora o comitê atribui uma <strong>nota de 0 a 100</strong> para cada combinação alternativa × critério.
+    Quanto maior a nota, melhor o desempenho naquele critério.
+  </p>
+
+  <div class="didatica amarelo exp-guiado">
+    <h3><span class="icone">📏</span> Escala de avaliação</h3>
+    <p style="margin-bottom: 10px;">Use a tabela abaixo como referência. Você pode usar notas intermediárias (por exemplo, 75).</p>
+    <div style="display: grid; grid-template-columns: 1fr; gap: 6px; margin-top: 8px;">
+      <div class="flex-row"><span class="nota nota-alto">85-100</span><span>Alto desempenho · excelente, resolve o problema</span></div>
+      <div class="flex-row"><span class="nota nota-bom">70-84</span><span>Bom desempenho · atende bem, com pequenas limitações</span></div>
+      <div class="flex-row"><span class="nota nota-moderado">50-69</span><span>Desempenho moderado · atende parcialmente</span></div>
+      <div class="flex-row"><span class="nota nota-baixo">0-49</span><span>Desempenho baixo · insuficiente ou com problemas sérios</span></div>
+    </div>
+    <p style="margin-top: 14px;">
+      <strong>Dica de facilitação</strong>: em reuniões presenciais, peça que cada segmento do comitê vote em separado e use a média.
+      Divergências grandes entre segmentos (por exemplo, produtores rurais e ambientalistas) são o ponto mais importante do debate.
+    </p>
+  </div>
+
+  <div class="tabela-container">
+    <table id="matriz-avaliacao">
+      <thead id="matriz-header"></thead>
+      <tbody id="matriz-body"></tbody>
+    </table>
+  </div>
+
+  <div class="acoes">
+    <button class="btn btn-secundario" onclick="irEtapa(2)">← Voltar</button>
+    <button class="btn btn-primario" onclick="calcularEIrResultado()">Calcular resultado →</button>
+  </div>
+</section>
+
+<!-- ===== ETAPA 4: RESULTADO ===== -->
+<section id="etapa-4" class="etapa">
+  <h2 class="titulo-etapa">Etapa 4: Resultado da análise</h2>
+  <p class="subtitulo-etapa">
+    A pontuação final é a <strong>soma ponderada</strong> das notas pelos pesos. Escala de 0 (pior) a 100 (melhor).
+  </p>
+
+  <div id="resultado-container"></div>
+
+  <div id="leitura-interpretativa"></div>
+
+  <div class="didatica">
+    <h3><span class="icone">⚠️</span> Importante: o que este resultado NÃO é</h3>
+    <p>
+      O resultado é um <strong>instrumento de diálogo</strong>, não um veredito técnico.
+      Duas pontuações próximas (diferença menor que 5 pontos) são praticamente empate e devem ser discutidas qualitativamente.
+    </p>
+    <p>
+      <strong>Use a análise para:</strong> estruturar o debate, revelar onde cada alternativa é forte ou fraca, identificar divergências entre segmentos do comitê, e documentar a decisão de forma transparente.
+    </p>
+    <p>
+      <strong>Não use para:</strong> substituir o debate qualitativo, justificar escolhas já tomadas, ou tratar como resultado científico.
+    </p>
+  </div>
+
+  <div class="acoes">
+    <button class="btn btn-secundario" onclick="irEtapa(3)">← Revisar avaliações</button>
+    <button class="btn btn-primario" onclick="irEtapa(5)">Gerar relatório →</button>
+  </div>
+</section>
+
+<!-- ===== ETAPA 5: RELATÓRIO ===== -->
+<section id="etapa-5" class="etapa">
+  <h2 class="titulo-etapa">Etapa 5: Relatório para a reunião</h2>
+  <p class="subtitulo-etapa">
+    Preencha os campos abaixo e gere um relatório formatado para anexar à ata da reunião.
+  </p>
+
+  <div class="cartao">
+    <div class="campo">
+      <label for="rel-comite">Nome do comitê de bacia</label>
+      <input type="text" id="rel-comite" placeholder="Ex: Comitê da Bacia do Alto Paraguai">
+    </div>
+    <div class="campo">
+      <label for="rel-data">Data da reunião</label>
+      <input type="text" id="rel-data" placeholder="Ex: 15 de março de 2026">
+    </div>
+    <div class="campo">
+      <label for="rel-responsavel">Responsável pela análise</label>
+      <input type="text" id="rel-responsavel" placeholder="Ex: Secretaria Executiva do Comitê">
+    </div>
+    <div class="campo">
+      <label for="rel-contexto">Contexto da decisão</label>
+      <textarea id="rel-contexto" rows="3" placeholder="Descreva brevemente o problema que motivou a análise e a pergunta central que o comitê precisa responder."></textarea>
+    </div>
+    <div class="campo">
+      <label for="rel-conclusao">Conclusão e encaminhamentos do comitê</label>
+      <textarea id="rel-conclusao" rows="4" placeholder="Registre a decisão do comitê após o debate, mesmo que diferente da alternativa com maior pontuação, e os próximos passos."></textarea>
+    </div>
+  </div>
+
+  <div class="acoes">
+    <button class="btn btn-primario" onclick="gerarRelatorioPDF()">🖨️ Gerar PDF (imprimir)</button>
+    <button class="btn btn-verde" onclick="exportarHTML()">📄 Baixar relatório HTML</button>
+    <button class="btn btn-secundario" onclick="exportarCSV()">📊 Exportar dados (CSV)</button>
+    <button class="btn btn-secundario" onclick="exportarJSON()">💾 Salvar projeto (JSON)</button>
+    <button class="btn btn-secundario" onclick="irEtapa(4)">← Voltar ao resultado</button>
+  </div>
+
+  <div class="didatica verde mt-24">
+    <h3><span class="icone">📎</span> Sobre os formatos</h3>
+    <ul>
+      <li><strong>PDF</strong>: use a função "Imprimir" do navegador e escolha "Salvar como PDF". Melhor para anexar à ata.</li>
+      <li><strong>HTML</strong>: relatório autônomo que pode ser enviado por e-mail e aberto em qualquer navegador.</li>
+      <li><strong>CSV</strong>: dados da matriz em planilha, para quem quiser refazer cálculos em Excel/LibreOffice.</li>
+      <li><strong>JSON</strong>: salva o projeto completo para retomar depois ou compartilhar com outra pessoa.</li>
+    </ul>
+  </div>
+</section>
+
+</main>
+
+<!-- ============== RODAPÉ ============== -->
+<footer>
+  <p>
+    <strong>Decide Bacia</strong> · Instrumento educativo e participativo para tomadas de decisão em comitês de bacia.
+  </p>
+  <p>
+    Baseada em metodologia consolidada de análise multicritério. Desenvolvida no contexto da cooperação Sul-Sul UNESCO em recursos hídricos.
+  </p>
+  <p style="margin-top: 14px;">
+    Elaborado por <strong>Ernandes Sobreira</strong>, Universidade do Estado de Mato Grosso · 2026
+  </p>
+  <p style="margin-top: 12px;">
+    Dados ficam apenas no seu navegador. Nada é enviado a servidores externos.
+  </p>
+  <p class="noprint" style="margin-top: 16px; font-size: 0.85rem;">
+    Versão 1.0 · Software livre · Acesse o código-fonte no GitHub
+  </p>
+</footer>
+
+<script>
+// ============================================================
+// DECIDE BACIA — lógica da aplicação
+// ============================================================
+
+// ---------- ESTADO ----------
+let estado = {
+  modo: 'guiado',
+  criterios: [],
+  alternativas: [],
+  avaliacoes: {}, // { altId_critId: nota }
+  rotulo: '',
+  etapaAtual: 0
+};
+
+// ---------- EXEMPLOS ----------
+const exemplos = {
+  ana: {
+    rotulo: 'Segurança hídrica na bacia (caso ANA/UNESCO)',
+    criterios: [
+      { id: 'c1', nome: 'Desempenho Hidrológico', peso: 20, descricao: 'Capacidade de garantir água em quantidade e qualidade.' },
+      { id: 'c2', nome: 'Robustez Multicenário', peso: 25, descricao: 'Desempenho sob diferentes cenários climáticos e de demanda.' },
+      { id: 'c3', nome: 'Custo (CAPEX + OPEX)', peso: 20, descricao: 'Custo de implantação mais operação. Nota maior = mais barato.' },
+      { id: 'c4', nome: 'Co-benefícios', peso: 15, descricao: 'Benefícios adicionais: biodiversidade, recreação, paisagem, clima.' },
+      { id: 'c5', nome: 'Equidade Social', peso: 20, descricao: 'Distribuição justa dos benefícios e riscos entre grupos sociais.' }
+    ],
+    alternativas: [
+      { id: 'a1', nome: 'A: Represa Grande', descricao: 'Construção de reservatório de grande porte com infraestrutura cinza tradicional.' },
+      { id: 'a2', nome: 'B: Portfólio Verde + Cinza', descricao: 'Combinação de pequenas barragens, recuperação de nascentes e áreas úmidas.' },
+      { id: 'a3', nome: 'C: Gestão de Demanda', descricao: 'Redução de perdas, reuso, medição, tarifa social e eficiência no uso.' }
+    ],
+    avaliacoes: {
+      'a1_c1': 90, 'a1_c2': 60, 'a1_c3': 40, 'a1_c4': 50, 'a1_c5': 30,
+      'a2_c1': 80, 'a2_c2': 90, 'a2_c3': 70, 'a2_c4': 90, 'a2_c5': 85,
+      'a3_c1': 70, 'a3_c2': 70, 'a3_c3': 95, 'a3_c4': 95, 'a3_c5': 90
+    }
+  },
+  saneamento: {
+    rotulo: 'Prioridade em saneamento na bacia',
+    criterios: [
+      { id: 'c1', nome: 'Impacto na saúde pública', peso: 30, descricao: 'Redução de doenças de veiculação hídrica.' },
+      { id: 'c2', nome: 'Custo por domicílio atendido', peso: 20, descricao: 'Custo unitário. Nota maior = mais barato.' },
+      { id: 'c3', nome: 'Alcance na população vulnerável', peso: 25, descricao: 'Quanto beneficia famílias de baixa renda e comunidades tradicionais.' },
+      { id: 'c4', nome: 'Impacto ambiental positivo', peso: 15, descricao: 'Melhoria na qualidade da água dos rios da bacia.' },
+      { id: 'c5', nome: 'Viabilidade de execução em 4 anos', peso: 10, descricao: 'Probabilidade de conclusão no ciclo atual de gestão.' }
+    ],
+    alternativas: [
+      { id: 'a1', nome: 'A: Esgotamento sanitário', descricao: 'Expansão da rede coletora e tratamento de esgoto nos municípios-sede.' },
+      { id: 'a2', nome: 'B: Resíduos sólidos', descricao: 'Regularização de aterros e coleta seletiva nos municípios da bacia.' },
+      { id: 'a3', nome: 'C: Educação sanitária e soluções locais', descricao: 'Programa de educação, fossas ecológicas e saneamento rural descentralizado.' }
+    ],
+    avaliacoes: {
+      'a1_c1': 90, 'a1_c2': 40, 'a1_c3': 60, 'a1_c4': 85, 'a1_c5': 50,
+      'a2_c1': 70, 'a2_c2': 70, 'a2_c3': 70, 'a2_c4': 70, 'a2_c5': 70,
+      'a3_c1': 65, 'a3_c2': 90, 'a3_c3': 90, 'a3_c4': 60, 'a3_c5': 85
+    }
+  },
+  nascentes: {
+    rotulo: 'Recuperação de nascentes',
+    criterios: [
+      { id: 'c1', nome: 'Efetividade na proteção', peso: 25, descricao: 'Eficácia comprovada em recuperar a vegetação e a perenidade.' },
+      { id: 'c2', nome: 'Adesão dos produtores rurais', peso: 25, descricao: 'Facilidade de adesão por parte dos proprietários de terra.' },
+      { id: 'c3', nome: 'Custo por nascente recuperada', peso: 20, descricao: 'Custo unitário da intervenção. Nota maior = mais barato.' },
+      { id: 'c4', nome: 'Impacto social positivo', peso: 15, descricao: 'Geração de renda e fixação no campo.' },
+      { id: 'c5', nome: 'Sustentabilidade no longo prazo', peso: 15, descricao: 'Capacidade de manter a recuperação após o fim do projeto.' }
+    ],
+    alternativas: [
+      { id: 'a1', nome: 'A: PSA (Pagamento por Serviços Ambientais)', descricao: 'Remuneração direta ao produtor rural por manter a área protegida.' },
+      { id: 'a2', nome: 'B: Apoio técnico + insumos', descricao: 'Fornecimento de mudas, cercas e assistência técnica, sem pagamento direto.' },
+      { id: 'a3', nome: 'C: Intervenção direta pelo poder público', descricao: 'Execução feita pelo Estado em parceria com o município.' }
+    ],
+    avaliacoes: {
+      'a1_c1': 85, 'a1_c2': 90, 'a1_c3': 55, 'a1_c4': 80, 'a1_c5': 85,
+      'a2_c1': 75, 'a2_c2': 75, 'a2_c3': 80, 'a2_c4': 70, 'a2_c5': 65,
+      'a3_c1': 70, 'a3_c2': 40, 'a3_c3': 60, 'a3_c4': 55, 'a3_c5': 50
+    }
+  }
+};
+
+// ---------- NAVEGAÇÃO ----------
+function irEtapa(num) {
+  document.querySelectorAll('section.etapa').forEach(s => s.classList.remove('ativa'));
+  document.getElementById('etapa-' + num).classList.add('ativa');
+  document.querySelectorAll('nav.principal button').forEach(b => {
+    b.classList.toggle('ativo', b.dataset.etapa == num);
+  });
+  estado.etapaAtual = num;
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+  salvarEstado();
+}
+
+document.querySelectorAll('nav.principal button').forEach(btn => {
+  btn.addEventListener('click', () => irEtapa(parseInt(btn.dataset.etapa)));
+});
+
+// ---------- MODO ----------
+document.querySelectorAll('.modo-card').forEach(card => {
+  card.addEventListener('click', () => {
+    document.querySelectorAll('.modo-card').forEach(c => c.classList.remove('selecionado'));
+    card.classList.add('selecionado');
+    estado.modo = card.dataset.modo;
+    aplicarModo();
+    salvarEstado();
+  });
+});
+
+function aplicarModo() {
+  const mostrarExplicacoes = estado.modo !== 'especialista';
+  document.querySelectorAll('.exp-guiado').forEach(el => {
+    el.style.display = mostrarExplicacoes ? '' : 'none';
+  });
+}
+
+// ---------- CARREGAR EXEMPLO ----------
+function carregarExemplo(chave) {
+  const ex = exemplos[chave];
+  if (!ex) return;
+  estado.rotulo = ex.rotulo;
+  estado.criterios = JSON.parse(JSON.stringify(ex.criterios));
+  estado.alternativas = JSON.parse(JSON.stringify(ex.alternativas));
+  estado.avaliacoes = JSON.parse(JSON.stringify(ex.avaliacoes));
+  renderizarCriterios();
+  renderizarAlternativas();
+  renderizarMatriz();
+  salvarEstado();
+  alert('Exemplo "' + ex.rotulo + '" carregado. Avance para a Etapa 1 para conferir os critérios.');
+}
+
+function iniciarDoZero() {
+  if (!confirm('Isto apaga todos os dados atuais. Continuar?')) return;
+  estado.rotulo = '';
+  estado.criterios = [
+    { id: 'c' + Date.now(), nome: '', peso: 25, descricao: '' },
+    { id: 'c' + (Date.now()+1), nome: '', peso: 25, descricao: '' },
+    { id: 'c' + (Date.now()+2), nome: '', peso: 25, descricao: '' },
+    { id: 'c' + (Date.now()+3), nome: '', peso: 25, descricao: '' }
+  ];
+  estado.alternativas = [
+    { id: 'a' + Date.now(), nome: '', descricao: '' },
+    { id: 'a' + (Date.now()+1), nome: '', descricao: '' }
+  ];
+  estado.avaliacoes = {};
+  renderizarCriterios();
+  renderizarAlternativas();
+  renderizarMatriz();
+  salvarEstado();
+  alert('Pronto. Avance para a Etapa 1 e preencha seus próprios critérios.');
+}
+
+// ---------- CRITÉRIOS ----------
+function renderizarCriterios() {
+  const container = document.getElementById('lista-criterios');
+  container.innerHTML = '';
+
+  estado.criterios.forEach((c, idx) => {
+    const card = document.createElement('div');
+    card.className = 'criterio-card';
+    card.innerHTML = `
+      <div class="criterio-header">
+        <div class="criterio-titulo">
+          <label>Critério ${idx + 1}</label>
+          <input type="text" placeholder="Ex: Desempenho Hidrológico" value="${escapeHTML(c.nome)}" data-cid="${c.id}" data-campo="nome">
+        </div>
+        <div class="criterio-peso">
+          <label style="margin:0;">Peso (%)</label>
+          <input type="number" min="0" max="100" step="1" class="peso-input" value="${c.peso}" data-cid="${c.id}" data-campo="peso">
+        </div>
+        <button class="btn btn-vermelho btn-pequeno" onclick="removerCriterio('${c.id}')">Remover</button>
+      </div>
+      <div class="campo">
+        <label>Descrição (opcional, aparece no relatório)</label>
+        <textarea rows="2" placeholder="O que este critério mede?" data-cid="${c.id}" data-campo="descricao">${escapeHTML(c.descricao)}</textarea>
+      </div>
+    `;
+    container.appendChild(card);
+  });
+
+  // Event listeners
+  container.querySelectorAll('input, textarea').forEach(inp => {
+    inp.addEventListener('input', e => {
+      const cid = e.target.dataset.cid;
+      const campo = e.target.dataset.campo;
+      const c = estado.criterios.find(x => x.id === cid);
+      if (!c) return;
+      if (campo === 'peso') {
+        c.peso = parseFloat(e.target.value) || 0;
+        atualizarPesoTotal();
+      } else {
+        c[campo] = e.target.value;
+      }
+      salvarEstado();
+    });
+  });
+
+  atualizarPesoTotal();
+}
+
+function atualizarPesoTotal() {
+  const total = estado.criterios.reduce((s, c) => s + (parseFloat(c.peso) || 0), 0);
+  const el = document.getElementById('peso-total-display');
+  el.textContent = 'Soma dos pesos: ' + total.toFixed(1) + '%';
+  el.classList.toggle('erro', Math.abs(total - 100) > 0.1);
+  if (Math.abs(total - 100) > 0.1) {
+    el.textContent += '  ⚠️ deve ser 100%';
+  } else {
+    el.textContent += '  ✅';
+  }
+}
+
+function adicionarCriterio() {
+  estado.criterios.push({ id: 'c' + Date.now(), nome: '', peso: 0, descricao: '' });
+  renderizarCriterios();
+  salvarEstado();
+}
+
+function removerCriterio(id) {
+  if (estado.criterios.length <= 2) { alert('Mantenha pelo menos 2 critérios.'); return; }
+  if (!confirm('Remover este critério?')) return;
+  estado.criterios = estado.criterios.filter(c => c.id !== id);
+  // limpar avaliações orfãs
+  Object.keys(estado.avaliacoes).forEach(k => {
+    if (k.endsWith('_' + id)) delete estado.avaliacoes[k];
+  });
+  renderizarCriterios();
+  salvarEstado();
+}
+
+function normalizarPesos() {
+  const total = estado.criterios.reduce((s, c) => s + (parseFloat(c.peso) || 0), 0);
+  if (total === 0) { alert('Defina pesos primeiro.'); return; }
+  estado.criterios.forEach(c => {
+    c.peso = Math.round((c.peso / total) * 100 * 10) / 10;
+  });
+  renderizarCriterios();
+  salvarEstado();
+}
+
+// ---------- ALTERNATIVAS ----------
+function renderizarAlternativas() {
+  const container = document.getElementById('lista-alternativas');
+  container.innerHTML = '';
+
+  estado.alternativas.forEach((a, idx) => {
+    const card = document.createElement('div');
+    card.className = 'alt-card';
+    card.innerHTML = `
+      <h4>Alternativa ${idx + 1}</h4>
+      <div class="campo">
+        <label>Nome da alternativa</label>
+        <input type="text" placeholder="Ex: A: Represa Grande" value="${escapeHTML(a.nome)}" data-aid="${a.id}" data-campo="nome">
+      </div>
+      <div class="campo">
+        <label>Descrição</label>
+        <textarea rows="2" placeholder="Descreva objetivamente a proposta..." data-aid="${a.id}" data-campo="descricao">${escapeHTML(a.descricao)}</textarea>
+      </div>
+      <button class="btn btn-vermelho btn-pequeno" onclick="removerAlternativa('${a.id}')">Remover</button>
+    `;
+    container.appendChild(card);
+  });
+
+  container.querySelectorAll('input, textarea').forEach(inp => {
+    inp.addEventListener('input', e => {
+      const aid = e.target.dataset.aid;
+      const campo = e.target.dataset.campo;
+      const a = estado.alternativas.find(x => x.id === aid);
+      if (!a) return;
+      a[campo] = e.target.value;
+      salvarEstado();
+    });
+  });
+}
+
+function adicionarAlternativa() {
+  estado.alternativas.push({ id: 'a' + Date.now(), nome: '', descricao: '' });
+  renderizarAlternativas();
+  salvarEstado();
+}
+
+function removerAlternativa(id) {
+  if (estado.alternativas.length <= 2) { alert('Mantenha pelo menos 2 alternativas.'); return; }
+  if (!confirm('Remover esta alternativa?')) return;
+  estado.alternativas = estado.alternativas.filter(a => a.id !== id);
+  Object.keys(estado.avaliacoes).forEach(k => {
+    if (k.startsWith(id + '_')) delete estado.avaliacoes[k];
+  });
+  renderizarAlternativas();
+  salvarEstado();
+}
+
+// ---------- MATRIZ DE AVALIAÇÃO ----------
+function renderizarMatriz() {
+  const header = document.getElementById('matriz-header');
+  const body = document.getElementById('matriz-body');
+  header.innerHTML = '';
+  body.innerHTML = '';
+
+  if (estado.criterios.length === 0 || estado.alternativas.length === 0) {
+    body.innerHTML = '<tr><td colspan="3" style="text-align:center; padding:30px; color: var(--cinza-secundario);">Cadastre critérios e alternativas antes de avaliar.</td></tr>';
+    return;
+  }
+
+  // Cabeçalho
+  const trH = document.createElement('tr');
+  trH.innerHTML = '<th>Alternativa \\ Critério</th>';
+  estado.criterios.forEach(c => {
+    trH.innerHTML += `<th title="${escapeHTML(c.descricao)}">${escapeHTML(c.nome || '(sem nome)')}<br><span style="font-size:0.75rem;opacity:0.85;font-weight:400;">peso ${c.peso}%</span></th>`;
+  });
+  header.appendChild(trH);
+
+  // Linhas
+  estado.alternativas.forEach(a => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td>${escapeHTML(a.nome || '(sem nome)')}</td>`;
+    estado.criterios.forEach(c => {
+      const k = a.id + '_' + c.id;
+      const v = estado.avaliacoes[k] !== undefined ? estado.avaliacoes[k] : '';
+      tr.innerHTML += `<td><input type="number" min="0" max="100" step="1" class="nota-input" value="${v}" data-key="${k}" placeholder="0-100"></td>`;
+    });
+    body.appendChild(tr);
+  });
+
+  // Event listeners
+  body.querySelectorAll('input').forEach(inp => {
+    inp.addEventListener('input', e => {
+      const k = e.target.dataset.key;
+      const v = parseFloat(e.target.value);
+      if (!isNaN(v) && v >= 0 && v <= 100) {
+        estado.avaliacoes[k] = v;
+      } else if (e.target.value === '') {
+        delete estado.avaliacoes[k];
+      }
+      aplicarCorNota(e.target, v);
+      salvarEstado();
+    });
+    // Aplicar cor inicial
+    const v = parseFloat(inp.value);
+    if (!isNaN(v)) aplicarCorNota(inp, v);
+  });
+}
+
+function aplicarCorNota(inp, v) {
+  if (isNaN(v)) { inp.style.background = ''; inp.style.color = ''; return; }
+  if (v >= 85) { inp.style.background = 'var(--verde-claro)'; inp.style.color = 'var(--verde-escuro)'; }
+  else if (v >= 70) { inp.style.background = '#E7F3D4'; inp.style.color = '#5C7A1F'; }
+  else if (v >= 50) { inp.style.background = 'var(--amarelo-claro)'; inp.style.color = '#8F4A12'; }
+  else { inp.style.background = 'var(--vermelho-claro)'; inp.style.color = '#8F2F15'; }
+}
+
+// ---------- CÁLCULO E RESULTADO ----------
+function calcularPontuacoes() {
+  const pesoTotal = estado.criterios.reduce((s, c) => s + (parseFloat(c.peso) || 0), 0);
+  return estado.alternativas.map(a => {
+    let soma = 0, somaPesos = 0;
+    const detalhe = [];
+    estado.criterios.forEach(c => {
+      const k = a.id + '_' + c.id;
+      const nota = estado.avaliacoes[k];
+      if (nota !== undefined) {
+        soma += nota * (c.peso / 100);
+        somaPesos += c.peso / 100;
+        detalhe.push({ critNome: c.nome, critPeso: c.peso, nota, contribuicao: nota * (c.peso / 100) });
+      }
+    });
+    const pontuacao = pesoTotal > 0 ? (soma / (pesoTotal / 100)) : 0;
+    return { alt: a, pontuacao, detalhe, completo: Object.keys(estado.avaliacoes).filter(k => k.startsWith(a.id + '_')).length === estado.criterios.length };
+  }).sort((x, y) => y.pontuacao - x.pontuacao);
+}
+
+function calcularEIrResultado() {
+  const pesoTotal = estado.criterios.reduce((s, c) => s + (parseFloat(c.peso) || 0), 0);
+  if (Math.abs(pesoTotal - 100) > 0.5) {
+    if (!confirm('Os pesos somam ' + pesoTotal.toFixed(1) + '%, não 100%. O cálculo será feito proporcionalmente. Continuar?')) return;
+  }
+  const faltando = [];
+  estado.alternativas.forEach(a => {
+    estado.criterios.forEach(c => {
+      if (estado.avaliacoes[a.id + '_' + c.id] === undefined) {
+        faltando.push((a.nome||'(sem nome)') + ' × ' + (c.nome||'(sem nome)'));
+      }
+    });
+  });
+  if (faltando.length > 0) {
+    if (!confirm('Faltam ' + faltando.length + ' notas. Continuar mesmo assim?')) return;
+  }
+  renderizarResultado();
+  irEtapa(4);
+}
+
+function faixaNota(p) {
+  if (p >= 85) return { classe: 'nota-alto', texto: 'Alto desempenho' };
+  if (p >= 70) return { classe: 'nota-bom', texto: 'Bom desempenho' };
+  if (p >= 50) return { classe: 'nota-moderado', texto: 'Desempenho moderado' };
+  return { classe: 'nota-baixo', texto: 'Desempenho baixo' };
+}
+
+function renderizarResultado() {
+  const resultados = calcularPontuacoes();
+  const container = document.getElementById('resultado-container');
+  container.innerHTML = '';
+
+  if (resultados.length === 0) {
+    container.innerHTML = '<p>Sem dados para calcular.</p>';
+    return;
+  }
+
+  const maxPont = resultados[0].pontuacao;
+
+  resultados.forEach((r, idx) => {
+    const faixa = faixaNota(r.pontuacao);
+    const ehVencedor = idx === 0 && r.pontuacao > 0;
+    const widthBar = Math.max(5, r.pontuacao);
+
+    let detalheHTML = '';
+    r.detalhe.forEach(d => {
+      detalheHTML += `
+        <div class="breakdown-item">
+          <span class="crit-nome">${escapeHTML(d.critNome || '(sem nome)')} <small>(peso ${d.critPeso}%)</small></span>
+          <span class="crit-valor">nota ${d.nota} → contribui ${d.contribuicao.toFixed(1)}</span>
+        </div>
+      `;
+    });
+
+    const card = document.createElement('div');
+    card.className = 'resultado-card' + (ehVencedor ? ' vencedor' : '');
+    card.innerHTML = `
+      <div class="resultado-nome">${idx + 1}º · ${escapeHTML(r.alt.nome || '(sem nome)')}</div>
+      <div style="color: var(--cinza-secundario); font-size: 0.95rem;">${escapeHTML(r.alt.descricao || '')}</div>
+      <div class="resultado-pontuacao">${r.pontuacao.toFixed(1)}</div>
+      <div style="margin-top: -8px;"><span class="faixa ${faixa.classe}">${faixa.texto}</span></div>
+      <div class="resultado-barra">
+        <div class="resultado-barra-fill" style="width: ${widthBar}%;">${r.pontuacao.toFixed(1)}/100</div>
+      </div>
+      <div class="breakdown">${detalheHTML}</div>
+    `;
+    container.appendChild(card);
+  });
+
+  // Leitura interpretativa
+  renderizarLeitura(resultados);
+}
+
+function renderizarLeitura(resultados) {
+  const container = document.getElementById('leitura-interpretativa');
+  container.innerHTML = '';
+  if (resultados.length < 2) return;
+
+  const top = resultados[0];
+  const seg = resultados[1];
+  const diff = top.pontuacao - seg.pontuacao;
+
+  let texto = '';
+  if (diff < 5) {
+    texto = `<strong>${escapeHTML(top.alt.nome)}</strong> e <strong>${escapeHTML(seg.alt.nome)}</strong> obtêm pontuações muito próximas (diferença de ${diff.toFixed(1)} pontos). Na prática, são um empate técnico. O comitê precisa decidir entre elas por critérios qualitativos: vontade política, oportunidade, capacidade de execução ou considerações não contempladas na análise.`;
+  } else if (diff < 15) {
+    texto = `<strong>${escapeHTML(top.alt.nome)}</strong> lidera por uma margem moderada (${diff.toFixed(1)} pontos à frente). É uma preferência clara, mas não esmagadora. Vale verificar em quais critérios a diferença se concentra e se esses critérios refletem de fato as prioridades do comitê.`;
+  } else {
+    texto = `<strong>${escapeHTML(top.alt.nome)}</strong> lidera com margem significativa (${diff.toFixed(1)} pontos à frente). É uma preferência robusta dada a estrutura de pesos e avaliações definida pelo comitê.`;
+  }
+
+  // pontos fortes e fracos do primeiro
+  if (top.detalhe.length > 0) {
+    const sortedDet = [...top.detalhe].sort((a,b) => b.nota - a.nota);
+    const forte = sortedDet[0];
+    const fraco = sortedDet[sortedDet.length - 1];
+    if (forte.nota - fraco.nota > 20) {
+      texto += `<br><br><strong>${escapeHTML(top.alt.nome)}</strong> é especialmente forte em <strong>${escapeHTML(forte.critNome)}</strong> (nota ${forte.nota}) e relativamente fraco em <strong>${escapeHTML(fraco.critNome)}</strong> (nota ${fraco.nota}). O comitê pode debater se há como complementar essa fraqueza com medidas adicionais.`;
+    }
+  }
+
+  container.innerHTML = `
+    <div class="leitura-box">
+      <h3><span class="icone">📖</span> Leitura interpretativa dos resultados</h3>
+      <p>${texto}</p>
+    </div>
+  `;
+}
+
+// ---------- EXPORTAÇÕES ----------
+function gerarRelatorioPDF() {
+  renderizarResultado();
+  // garantir que todas as etapas relevantes sejam visíveis no print
+  const etapasImprimir = [1, 2, 3, 4, 5];
+  document.querySelectorAll('section.etapa').forEach(s => {
+    const num = parseInt(s.id.replace('etapa-', ''));
+    s.style.display = etapasImprimir.includes(num) ? 'block' : 'none';
+  });
+  setTimeout(() => {
+    window.print();
+    // restaurar após impressão
+    setTimeout(() => {
+      document.querySelectorAll('section.etapa').forEach(s => s.style.display = '');
+      irEtapa(estado.etapaAtual);
+    }, 500);
+  }, 200);
+}
+
+function exportarHTML() {
+  const resultados = calcularPontuacoes();
+  const comite = document.getElementById('rel-comite').value || 'Comitê de Bacia';
+  const data = document.getElementById('rel-data').value || new Date().toLocaleDateString('pt-BR');
+  const responsavel = document.getElementById('rel-responsavel').value || '';
+  const contexto = document.getElementById('rel-contexto').value || '';
+  const conclusao = document.getElementById('rel-conclusao').value || '';
+
+  let html = `<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8">
+  <title>Relatório · ${escapeHTML(comite)}</title>
+  <style>
+    body{font-family:Segoe UI,system-ui,sans-serif;max-width:900px;margin:40px auto;padding:20px;color:#1a1a1a;line-height:1.6;}
+    h1{color:#023E8A;border-bottom:3px solid #0077B6;padding-bottom:10px;}
+    h2{color:#0077B6;margin-top:32px;}
+    h3{color:#023E8A;margin-top:24px;}
+    table{width:100%;border-collapse:collapse;margin:16px 0;}
+    th{background:#023E8A;color:white;padding:12px;text-align:left;}
+    td{padding:10px;border-bottom:1px solid #e5e5e5;}
+    .meta{background:#CAF0F8;padding:16px;border-radius:8px;margin:16px 0;}
+    .resultado{background:#f8fcfe;border:2px solid #CAF0F8;padding:20px;border-radius:8px;margin:16px 0;}
+    .resultado.topo{background:#FFF9E6;border-color:#F4A261;}
+    .pontuacao{font-size:2.5rem;font-weight:bold;color:#0077B6;}
+    .barra{height:24px;background:#e5e5e5;border-radius:12px;overflow:hidden;margin:10px 0;}
+    .barra-fill{height:100%;background:linear-gradient(90deg,#0077B6,#2A9D8F);padding-left:10px;color:white;font-weight:bold;display:flex;align-items:center;}
+    .footer{margin-top:40px;padding-top:20px;border-top:1px solid #e5e5e5;font-size:0.85rem;color:#666;}
+  </style></head><body>
+  <h1>Relatório de Análise Multicritério</h1>
+  <div class="meta">
+    <strong>Comitê:</strong> ${escapeHTML(comite)}<br>
+    <strong>Data da reunião:</strong> ${escapeHTML(data)}<br>
+    <strong>Responsável:</strong> ${escapeHTML(responsavel)}<br>
+    ${estado.rotulo ? '<strong>Caso analisado:</strong> ' + escapeHTML(estado.rotulo) + '<br>' : ''}
+  </div>`;
+
+  if (contexto) html += `<h2>Contexto da decisão</h2><p>${escapeHTML(contexto).replace(/\n/g,'<br>')}</p>`;
+
+  html += `<h2>Critérios e pesos</h2><table><thead><tr><th>Critério</th><th>Peso</th><th>Descrição</th></tr></thead><tbody>`;
+  estado.criterios.forEach(c => {
+    html += `<tr><td><strong>${escapeHTML(c.nome)}</strong></td><td>${c.peso}%</td><td>${escapeHTML(c.descricao || '')}</td></tr>`;
+  });
+  html += `</tbody></table>`;
+
+  html += `<h2>Alternativas analisadas</h2>`;
+  estado.alternativas.forEach(a => {
+    html += `<h3>${escapeHTML(a.nome)}</h3><p>${escapeHTML(a.descricao)}</p>`;
+  });
+
+  html += `<h2>Matriz de avaliação</h2><table><thead><tr><th>Alternativa</th>`;
+  estado.criterios.forEach(c => html += `<th>${escapeHTML(c.nome)}<br><small>(${c.peso}%)</small></th>`);
+  html += `</tr></thead><tbody>`;
+  estado.alternativas.forEach(a => {
+    html += `<tr><td><strong>${escapeHTML(a.nome)}</strong></td>`;
+    estado.criterios.forEach(c => {
+      const v = estado.avaliacoes[a.id + '_' + c.id];
+      html += `<td>${v !== undefined ? v : '-'}</td>`;
+    });
+    html += `</tr>`;
+  });
+  html += `</tbody></table>`;
+
+  html += `<h2>Resultados</h2>`;
+  resultados.forEach((r, idx) => {
+    const faixa = faixaNota(r.pontuacao);
+    html += `<div class="resultado ${idx === 0 ? 'topo' : ''}">
+      <h3>${idx + 1}º · ${escapeHTML(r.alt.nome)}</h3>
+      <div class="pontuacao">${r.pontuacao.toFixed(1)}/100</div>
+      <p><strong>${faixa.texto}</strong></p>
+      <div class="barra"><div class="barra-fill" style="width:${Math.max(5,r.pontuacao)}%;">${r.pontuacao.toFixed(1)}</div></div>
+    </div>`;
+  });
+
+  // leitura interpretativa
+  if (resultados.length >= 2) {
+    const diff = resultados[0].pontuacao - resultados[1].pontuacao;
+    let interp = '';
+    if (diff < 5) interp = `As duas alternativas mais bem pontuadas ficaram em empate técnico (diferença de ${diff.toFixed(1)} pontos). A decisão final deve incorporar critérios qualitativos não contemplados na análise.`;
+    else if (diff < 15) interp = `A alternativa melhor pontuada lidera por margem moderada (${diff.toFixed(1)} pontos).`;
+    else interp = `A alternativa melhor pontuada lidera por margem significativa (${diff.toFixed(1)} pontos).`;
+    html += `<h2>Leitura interpretativa</h2><p>${interp}</p>`;
+  }
+
+  if (conclusao) html += `<h2>Conclusão e encaminhamentos</h2><p>${escapeHTML(conclusao).replace(/\n/g,'<br>')}</p>`;
+
+  html += `<div class="footer">Relatório gerado pela plataforma Decide Bacia · Instrumento educativo e participativo para tomadas de decisão em comitês de bacia · Elaborado por Ernandes Sobreira, Universidade do Estado de Mato Grosso · 2026<br>${new Date().toLocaleString('pt-BR')}</div></body></html>`;
+
+  download(html, 'relatorio_multicriterio.html', 'text/html');
+}
+
+function exportarCSV() {
+  let csv = 'Alternativa';
+  estado.criterios.forEach(c => csv += ';' + (c.nome || '') + ' (peso ' + c.peso + '%)');
+  csv += ';Pontuação Final\n';
+  const resultados = calcularPontuacoes();
+  resultados.forEach(r => {
+    csv += (r.alt.nome || '');
+    estado.criterios.forEach(c => {
+      const v = estado.avaliacoes[r.alt.id + '_' + c.id];
+      csv += ';' + (v !== undefined ? v : '');
+    });
+    csv += ';' + r.pontuacao.toFixed(2) + '\n';
+  });
+  download('\uFEFF' + csv, 'analise_multicriterio.csv', 'text/csv;charset=utf-8');
+}
+
+function exportarJSON() {
+  const j = JSON.stringify({ versao: '1.0', gerado: new Date().toISOString(), ...estado }, null, 2);
+  download(j, 'projeto_multicriterio.json', 'application/json');
+}
+
+function download(conteudo, nome, mime) {
+  const blob = new Blob([conteudo], { type: mime });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = nome;
+  document.body.appendChild(a); a.click();
+  setTimeout(() => { document.body.removeChild(a); URL.revokeObjectURL(url); }, 100);
+}
+
+// ---------- PERSISTÊNCIA LOCAL (usando variável em memória da sessão) ----------
+// Nota: localStorage não é usado; estado persiste apenas durante a sessão.
+// Para persistência entre sessões, o usuário exporta JSON e importa depois.
+
+let estadoSalvo = null;
+
+function salvarEstado() {
+  estadoSalvo = JSON.parse(JSON.stringify(estado));
+}
+
+function carregarSalvo() {
+  const input = document.createElement('input');
+  input.type = 'file';
+  input.accept = '.json';
+  input.onchange = e => {
+    const f = e.target.files[0];
+    if (!f) return;
+    const reader = new FileReader();
+    reader.onload = ev => {
+      try {
+        const d = JSON.parse(ev.target.result);
+        if (d.criterios && d.alternativas) {
+          estado = { ...estado, ...d };
+          renderizarCriterios();
+          renderizarAlternativas();
+          renderizarMatriz();
+          alert('Projeto carregado.');
+        } else {
+          alert('Arquivo não reconhecido.');
+        }
+      } catch (err) {
+        alert('Erro ao carregar: ' + err.message);
+      }
+    };
+    reader.readAsText(f);
+  };
+  input.click();
+}
+
+// ---------- UTILIDADES ----------
+function escapeHTML(s) {
+  if (s === null || s === undefined) return '';
+  return String(s).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+}
+
+// ---------- INICIALIZAÇÃO ----------
+window.addEventListener('DOMContentLoaded', () => {
+  // carregar exemplo ANA por padrão na primeira visita
+  carregarExemplo('ana');
+  irEtapa(0);
+  aplicarModo();
+});
+</script>
+
+</body>
+</html>
